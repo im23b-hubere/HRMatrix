@@ -43,7 +43,7 @@ export const authOptions: AuthOptions = {
           },
           include: { company: true },
         });
-        if (!user || !user.company) return null;
+        if (!user || !user.company || !password || !user.password) return null;
         const isValid = await bcrypt.compare(password, user.password);
         if (!isValid) return null;
         return {
