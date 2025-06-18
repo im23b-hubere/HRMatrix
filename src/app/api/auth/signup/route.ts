@@ -15,6 +15,9 @@ export async function POST(req: Request) {
     if (!dbCompany) {
       dbCompany = await prisma.company.create({ data: { name: company } });
     }
+    // Prüfen, wie viele User es für diese Firma gibt
+    const userCount = await prisma.user.count({ where: { companyId: dbCompany.id } });
+    const role = userCount === 0 ? 'ADMIN' : 'USER';
     // Prüfen, ob User mit E-Mail und Firma schon existiert
     const existingUser = await prisma.user.findFirst({
       where: {
@@ -34,6 +37,7 @@ export async function POST(req: Request) {
         name,
         password: hashedPassword,
         companyId: dbCompany.id,
+        role,
       },
     });
     return NextResponse.json({ success: true });

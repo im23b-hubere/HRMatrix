@@ -38,6 +38,7 @@ export const authOptions = {
           name: user.name,
           companyId: user.company.id,
           company: user.company.name,
+          role: user.role,
         };
       },
     }),
@@ -50,6 +51,7 @@ export const authOptions = {
       if (user) {
         token.companyId = user.companyId;
         token.company = user.company;
+        token.role = user.role;
       }
       return token;
     },
@@ -57,6 +59,7 @@ export const authOptions = {
       if (token && session.user) {
         session.user.companyId = token.companyId;
         session.user.company = token.company;
+        session.user.role = token.role;
       }
       return session;
     },

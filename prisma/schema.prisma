@@ -15,9 +15,10 @@ datasource db {
 }
 
 model Company {
-  id    Int    @id @default(autoincrement())
-  name  String @unique
-  users User[]
+  id          Int          @id @default(autoincrement())
+  name        String       @unique
+  users       User[]
+  invitations Invitation[]
 }
 
 model User {
@@ -27,6 +28,7 @@ model User {
   name       String
   company    Company  @relation(fields: [companyId], references: [id])
   companyId  Int
+  role       Role     @default(USER)
   accounts   Account[]
   sessions   Session[]
   createdAt  DateTime @default(now())
@@ -65,4 +67,27 @@ model VerificationToken {
   expires   DateTime
 
   @@unique([identifier, token])
+}
+
+model Invitation {
+  id         Int      @id @default(autoincrement())
+  email      String
+  token      String   @unique
+  company    Company  @relation(fields: [companyId], references: [id])
+  companyId  Int
+  role       Role     @default(USER)
+  status     InvitationStatus @default(PENDING)
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+}
+
+enum Role {
+  ADMIN
+  USER
+}
+
+enum InvitationStatus {
+  PENDING
+  ACCEPTED
+  EXPIRED
 }
