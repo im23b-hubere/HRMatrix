@@ -1,5 +1,5 @@
 import { getServerSession } from "next-auth";
-import { authOptions } from "../api/auth/[...nextauth]/route";
+import { authOptions } from "../api/auth/[...nextauth]/authOptions";
 import { PrismaClient } from "@prisma/client";
 import AdminInviteSection from "./AdminInviteSection";
 import type { AuthOptions } from "next-auth";
