@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { PrismaClient, Role } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 import { Resend } from "resend";
 import { randomBytes } from "crypto";
 
@@ -31,7 +31,7 @@ export async function POST(req: Request) {
         email,
         token,
         companyId,
-        role: role === "ADMIN" ? Role.ADMIN : Role.USER,
+        role: role === "ADMIN" ? "ADMIN" : "USER",
         expiresAt,
       },
     });
@@ -47,7 +47,7 @@ export async function POST(req: Request) {
         <p>Der Link ist 24 Stunden gültig.</p>`
     });
     return NextResponse.json({ success: true });
-  } catch (err) {
-    return NextResponse.json({ error: "Fehler beim Versenden der Einladung." }, { status: 500 });
+  } catch {
+    return NextResponse.json({ error: "Etwas ist schiefgelaufen." }, { status: 500 });
   }
 } 

@@ -30,8 +30,8 @@ export default function SignupPage() {
         const data = await res.json();
         setError(data.error || "Registrierung fehlgeschlagen.");
       }
-    } catch (err) {
-      setError("Serverfehler. Bitte versuche es später erneut.");
+    } catch {
+      setError("Etwas ist schiefgelaufen. Bitte versuche es erneut.");
     } finally {
       setLoading(false);
     }

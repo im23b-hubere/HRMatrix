@@ -41,7 +41,7 @@ export async function POST(req: Request) {
       },
     });
     return NextResponse.json({ success: true });
-  } catch (err) {
-    return NextResponse.json({ error: "Serverfehler bei der Registrierung." }, { status: 500 });
+  } catch {
+    return NextResponse.json({ error: "Etwas ist schiefgelaufen." }, { status: 500 });
   }
 } 

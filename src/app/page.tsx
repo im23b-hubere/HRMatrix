@@ -1,5 +1,3 @@
-import Image from "next/image";
-
 export default function Home() {
   return (
     <main className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-accent to-white dark:from-gray-900 dark:to-gray-800 transition-colors duration-500 px-4">

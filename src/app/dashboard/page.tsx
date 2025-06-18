@@ -1,25 +1,31 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "../api/auth/[...nextauth]/route";
 import { PrismaClient } from "@prisma/client";
-import React, { useState } from "react";
-import type { AuthOptions } from "next-auth";
-import InviteForm from "./InviteForm";
 import AdminInviteSection from "./AdminInviteSection";
+import type { AuthOptions } from "next-auth";
+
+// Typ für User
+interface DashboardUser {
+  id: number;
+  name: string;
+  email: string;
+  role: string;
+  companyId?: number;
+}
 
 export default async function DashboardPage() {
   const session = await getServerSession(authOptions as AuthOptions);
   const prisma = new PrismaClient();
-  let users = [];
-  const user = session?.user as any;
+  let users: DashboardUser[] = [];
+  const user = session?.user as DashboardUser | null;
   if (user?.companyId) {
     users = await prisma.user.findMany({
       where: { companyId: user.companyId },
-      select: { id: true, name: true, email: true, role: true },
+      select: { id: true, name: true, email: true, role: true, companyId: true },
       orderBy: { name: "asc" },
     });
   }
 
-  // Props explizit extrahieren
   const companyId = user?.companyId ? Number(user.companyId) : undefined;
   const inviterName = user?.name ? String(user.name) : undefined;
   const inviterEmail = user?.email ? String(user.email) : undefined;
@@ -48,7 +54,7 @@ export default async function DashboardPage() {
                     <td colSpan={3} className="px-4 py-6 text-center text-gray-500 dark:text-gray-400">Keine User gefunden.</td>
                   </tr>
                 ) : (
-                  users.map((user: any) => (
+                  users.map((user) => (
                     <tr key={user.id} className="border-b border-accent/40 dark:border-gray-700 hover:bg-accent/30 dark:hover:bg-gray-800/40 transition-colors">
                       <td className="px-4 py-3 font-semibold text-gray-900 dark:text-white">{user.name}</td>
                       <td className="px-4 py-3 text-gray-700 dark:text-gray-200">{user.email}</td>
@@ -59,7 +65,6 @@ export default async function DashboardPage() {
               </tbody>
             </table>
           </div>
-          <pre className="bg-gray-900 text-yellow-300 p-2 rounded mb-2 text-xs max-w-full overflow-x-auto">{JSON.stringify(user, null, 2)}</pre>
           {user?.role === "ADMIN" && companyId && inviterName && inviterEmail && (
             <AdminInviteSection companyId={companyId} inviterName={inviterName} inviterEmail={inviterEmail} />
           )}
