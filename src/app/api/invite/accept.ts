@@ -35,7 +35,7 @@ export async function POST(req: Request) {
     // Optional: User automatisch einloggen (hier: Session erstellen oder JWT zurückgeben)
     // TODO: Implementiere Login/Session Handling nach Bedarf
     return NextResponse.json({ success: true });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: "Fehler beim Anlegen des Accounts." }, { status: 500 });
   }
 } 

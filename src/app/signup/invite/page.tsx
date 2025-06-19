@@ -59,8 +59,12 @@ export default function InviteSignupPage() {
       if (!res.ok) throw new Error(await res.text());
       setSuccess(true);
       setTimeout(() => router.push("/dashboard"), 1500);
-    } catch (err: any) {
-      setError(err.message || "Fehler beim Anlegen des Accounts.");
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message || "Fehler beim Anlegen des Accounts.");
+      } else {
+        setError("Fehler beim Anlegen des Accounts.");
+      }
     } finally {
       setSubmitting(false);
     }
