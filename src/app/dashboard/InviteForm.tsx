@@ -30,34 +30,66 @@ export default function InviteForm({ companyId, inviterName, inviterEmail }: { c
   }
 
   return (
-    <form onSubmit={handleInvite} className="w-full flex flex-col sm:flex-row gap-2 items-center mt-6 mb-2">
-      <input
-        type="email"
-        required
-        value={email}
-        onChange={e => setEmail(e.target.value)}
-        placeholder="E-Mail-Adresse einladen"
-        className="flex-1 rounded-xl px-4 py-2 border border-gray-300 dark:border-gray-600 bg-white/80 dark:bg-gray-800/80 focus:outline-none focus:ring-2 focus:ring-primary text-base shadow-inner"
-        disabled={loading}
-      />
-      <select
-        value={role}
-        onChange={e => setRole(e.target.value)}
-        className="rounded-xl px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white/80 dark:bg-gray-800/80 focus:outline-none focus:ring-2 focus:ring-primary text-base shadow-inner"
-        disabled={loading}
-      >
-        <option value="USER">Mitarbeiter</option>
-        <option value="ADMIN">Admin</option>
-      </select>
-      <button
-        type="submit"
-        className="px-6 py-2 rounded-xl bg-primary text-white font-bold shadow-lg hover:bg-secondary hover:scale-[1.03] active:scale-100 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/50 disabled:opacity-60"
-        disabled={loading}
-      >
-        {loading ? "Senden..." : "Einladen"}
-      </button>
-      {success && <span className="ml-4 text-green-600 font-semibold">{success}</span>}
-      {error && <span className="ml-4 text-red-600 font-semibold">{error}</span>}
+    <form onSubmit={handleInvite} className="space-y-4">
+      <div className="space-y-4">
+        <div>
+          <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+            E-Mail-Adresse
+          </label>
+          <input
+            id="email"
+            type="email"
+            required
+            value={email}
+            onChange={e => setEmail(e.target.value)}
+            placeholder="name@firma.de"
+            className="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
+            disabled={loading}
+          />
+        </div>
+
+        <div>
+          <label htmlFor="role" className="block text-sm font-medium text-gray-700 mb-1">
+            Rolle
+          </label>
+          <select
+            id="role"
+            value={role}
+            onChange={e => setRole(e.target.value)}
+            className="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
+            disabled={loading}
+          >
+            <option value="USER">Mitarbeiter</option>
+            <option value="ADMIN">Administrator</option>
+          </select>
+        </div>
+      </div>
+
+      {error && (
+        <div className="p-3 rounded-lg bg-red-50 border border-red-100">
+          <p className="text-red-600 text-sm text-center font-medium">{error}</p>
+        </div>
+      )}
+      {success && (
+        <div className="p-3 rounded-lg bg-green-50 border border-green-100">
+          <p className="text-green-600 text-sm text-center font-medium">{success}</p>
+        </div>
+      )}
+
+      <div className="flex justify-end gap-3 mt-6">
+        <button
+          type="submit"
+          className="px-6 py-2.5 rounded-xl bg-blue-600 text-white font-semibold shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300 transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed"
+          disabled={loading}
+        >
+          {loading ? (
+            <span className="flex items-center justify-center gap-2">
+              <span className="animate-spin rounded-full h-5 w-5 border-2 border-white/30 border-t-white"></span>
+              Einladung senden...
+            </span>
+          ) : "Einladung senden"}
+        </button>
+      </div>
     </form>
   );
 } 
