@@ -45,7 +45,7 @@ export default function ProfileForm({ user }: ProfileFormProps) {
         const data = await res.json();
         setError(data.error || "Fehler beim Aktualisieren des Profils.");
       }
-    } catch (err) {
+    } catch {
       setError("Ein unerwarteter Fehler ist aufgetreten.");
     } finally {
       setLoading(false);

@@ -23,7 +23,7 @@ export async function POST(request: Request) {
     }
 
     const prisma = new PrismaClient();
-    const user = await prisma.user.update({
+    await prisma.user.update({
       where: { email: session.user.email },
       data: { name },
     });
