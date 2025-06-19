@@ -2,6 +2,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "../api/auth/[...nextauth]/authOptions";
 import { PrismaClient } from "@prisma/client";
 import AdminInviteSection from "./AdminInviteSection";
+import AccountMenu from "./AccountMenu";
 import type { AuthOptions } from "next-auth";
 
 // Typ für User
@@ -30,58 +31,88 @@ export default async function DashboardPage() {
   const inviterName = user?.name ? String(user.name) : undefined;
   const inviterEmail = user?.email ? String(user.email) : undefined;
 
-  return (
-    <main className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-blue-50 to-white px-4 py-8">
-      <section className="w-full max-w-4xl bg-white/95 rounded-2xl shadow-lg p-8 flex flex-col gap-6 backdrop-blur-sm border border-gray-100 animate-fade-in">
-        <div className="text-center space-y-2 mb-4">
-          <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-          <p className="text-gray-600">Übersicht aller Mitarbeiter in deinem Unternehmen</p>
-        </div>
+  if (!user) {
+    return null; // oder Redirect zur Login-Seite
+  }
 
-        <div className="overflow-hidden rounded-xl border border-gray-200">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">E-Mail</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rolle</th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {users.length === 0 ? (
+  return (
+    <main className="min-h-screen bg-gradient-to-br from-blue-50 to-white">
+      {/* Header */}
+      <header className="bg-white border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <div className="flex items-center gap-2">
+              <span className="text-xl font-bold text-gray-900">HRMatrix</span>
+              <span className="inline-block bg-blue-100 text-blue-600 rounded-full p-1">
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                </svg>
+              </span>
+            </div>
+            <AccountMenu user={user} />
+          </div>
+        </div>
+      </header>
+
+      {/* Content */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="bg-white/95 rounded-2xl shadow-lg p-8 backdrop-blur-sm border border-gray-100 animate-fade-in">
+          <div className="flex justify-between items-center mb-6">
+            <div className="space-y-1">
+              <h1 className="text-2xl font-bold text-gray-900">Team-Übersicht</h1>
+              <p className="text-sm text-gray-600">Verwalte die Mitglieder deines Teams</p>
+            </div>
+            {user?.role === "ADMIN" && companyId && inviterName && inviterEmail && (
+              <AdminInviteSection companyId={companyId} inviterName={inviterName} inviterEmail={inviterEmail} />
+            )}
+          </div>
+
+          <div className="overflow-hidden rounded-xl border border-gray-200">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
                 <tr>
-                  <td colSpan={3} className="px-6 py-8 text-center text-gray-500">
-                    <p className="text-sm">Keine Mitarbeiter gefunden</p>
-                    <p className="text-xs mt-1">Nutze die Einladungsfunktion, um neue Mitarbeiter hinzuzufügen</p>
-                  </td>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">E-Mail</th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rolle</th>
                 </tr>
-              ) : (
-                users.map((user) => (
-                  <tr key={user.id} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">{user.name}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-600">{user.email}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                        {user.role}
-                      </span>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {users.length === 0 ? (
+                  <tr>
+                    <td colSpan={3} className="px-6 py-8 text-center text-gray-500">
+                      <p className="text-sm">Keine Mitarbeiter gefunden</p>
+                      <p className="text-xs mt-1">Nutze die Einladungsfunktion, um neue Mitarbeiter hinzuzufügen</p>
                     </td>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-
-        {user?.role === "ADMIN" && companyId && inviterName && inviterEmail && (
-          <div className="mt-6">
-            <AdminInviteSection companyId={companyId} inviterName={inviterName} inviterEmail={inviterEmail} />
+                ) : (
+                  users.map((user) => (
+                    <tr key={user.id} className="hover:bg-gray-50 transition-colors">
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center">
+                          <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-medium">
+                            {user.name.charAt(0).toUpperCase()}
+                          </div>
+                          <div className="ml-3">
+                            <div className="text-sm font-medium text-gray-900">{user.name}</div>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-600">{user.email}</div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                          {user.role === 'ADMIN' ? 'Administrator' : 'Mitarbeiter'}
+                        </span>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
           </div>
-        )}
-      </section>
+        </div>
+      </div>
     </main>
   );
 } 
