@@ -2,6 +2,11 @@
 import React, { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
+type InviteInfo = {
+  email: string;
+  company: { name: string };
+};
+
 export default function InviteSignupPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -9,7 +14,7 @@ export default function InviteSignupPage() {
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [invite, setInvite] = useState<any>(null);
+  const [invite, setInvite] = useState<InviteInfo | null>(null);
   const [form, setForm] = useState({ name: "", password: "" });
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -27,7 +32,7 @@ export default function InviteSignupPage() {
         return res.json();
       })
       .then((data) => {
-        setInvite(data.invite);
+        setInvite(data.invite as InviteInfo);
         setLoading(false);
       })
       .catch(() => {
