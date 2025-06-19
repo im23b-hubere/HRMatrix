@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
 
 function LoginPage() {
   const [company, setCompany] = useState("");
@@ -36,7 +37,26 @@ function LoginPage() {
   }
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-white">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-gray-50 to-white p-4">
+      {/* Back Arrow */}
+      <div className="absolute top-8 left-8">
+        <Link
+          href="/"
+          className="inline-flex items-center gap-2 text-gray-500 hover:text-blue-600 transition-colors duration-200"
+          aria-label="Zurück zur Startseite"
+        >
+          <svg
+            className="w-5 h-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          </svg>
+          <span className="text-sm font-medium">Zurück</span>
+        </Link>
+      </div>
+
       <div className="w-full max-w-md p-8 sm:p-10 rounded-2xl shadow-lg bg-white/95 backdrop-blur-sm border border-gray-100 flex flex-col gap-6 animate-fade-in">
         <div className="text-center space-y-2">
           <h1 className="text-3xl font-bold text-gray-900">Willkommen zurück</h1>
@@ -129,7 +149,7 @@ function LoginPage() {
           </p>
         </form>
       </div>
-    </main>
+    </div>
   );
 }
 

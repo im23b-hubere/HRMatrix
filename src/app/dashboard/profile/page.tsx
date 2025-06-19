@@ -48,21 +48,21 @@ export default async function ProfilePage() {
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white px-4 sm:px-6 lg:px-8 py-8">
       <div className="max-w-4xl mx-auto">
         {/* Back Arrow */}
-        <div className="mb-4">
+        <div className="mb-6">
           <Link
             href="/dashboard"
-            className="inline-flex items-center gap-2 px-3 py-2 rounded-xl bg-white/80 border border-gray-200 shadow-sm hover:bg-blue-50 hover:border-blue-200 transition-all duration-200 group focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="inline-flex items-center gap-2 text-gray-500 hover:text-blue-600 transition-colors duration-200"
             aria-label="Zurück zum Dashboard"
           >
             <svg
-              className="w-5 h-5 text-gray-500 group-hover:text-blue-600 transition-colors duration-200"
+              className="w-5 h-5"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
             >
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
-            <span className="text-sm font-medium text-gray-700 group-hover:text-blue-700 transition-colors duration-200">Zurück</span>
+            <span className="text-sm font-medium">Zurück</span>
           </Link>
         </div>
         {/* Header Section */}
