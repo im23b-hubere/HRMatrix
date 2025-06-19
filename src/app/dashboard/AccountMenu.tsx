@@ -1,6 +1,7 @@
 "use client";
 import { useState, useRef, useEffect } from 'react';
 import { signOut } from 'next-auth/react';
+import Link from 'next/link';
 
 interface AccountMenuProps {
   user: {
@@ -56,6 +57,17 @@ export default function AccountMenu({ user }: AccountMenuProps) {
           </div>
           
           <div className="py-1">
+            <Link
+              href="/dashboard/profile"
+              className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-2"
+              onClick={() => setIsOpen(false)}
+            >
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              </svg>
+              Profil bearbeiten
+            </Link>
+
             <button
               onClick={() => signOut({ callbackUrl: '/login' })}
               className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-2"

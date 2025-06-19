@@ -52,16 +52,23 @@ export default function InviteForm({ companyId, inviterName, inviterEmail }: { c
           <label htmlFor="role" className="block text-sm font-medium text-gray-700 mb-1">
             Rolle
           </label>
-          <select
-            id="role"
-            value={role}
-            onChange={e => setRole(e.target.value)}
-            className="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
-            disabled={loading}
-          >
-            <option value="USER">Mitarbeiter</option>
-            <option value="ADMIN">Administrator</option>
-          </select>
+          <div className="relative">
+            <select
+              id="role"
+              value={role}
+              onChange={e => setRole(e.target.value)}
+              className="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 appearance-none cursor-pointer text-gray-900"
+              disabled={loading}
+            >
+              <option value="USER" className="py-2">Mitarbeiter</option>
+              <option value="ADMIN" className="py-2">Administrator</option>
+            </select>
+            <div className="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none text-gray-500">
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
+          </div>
         </div>
       </div>
 
