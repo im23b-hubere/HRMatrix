@@ -18,11 +18,6 @@ export async function POST(req: Request) {
     if (existingUser) {
       return NextResponse.json({ error: "User existiert bereits." }, { status: 400 });
     }
-    // Prüfen, ob Einladung schon offen ist
-    const openInvite = await prisma.invitation.findFirst({ where: { email, companyId, status: "PENDING" } });
-    if (openInvite) {
-      return NextResponse.json({ error: "Für diese E-Mail existiert bereits eine offene Einladung." }, { status: 400 });
-    }
     // Token generieren
     const token = randomBytes(32).toString("hex");
     const expiresAt = new Date(Date.now() + 1000 * 60 * 60 * 24); // 24h gültig

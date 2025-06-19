@@ -77,7 +77,7 @@ function LoginPage() {
                 required
                 value={company}
                 onChange={e => setCompany(e.target.value)}
-                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
+                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 text-gray-900 text-base"
                 placeholder="Ihre Firma"
                 disabled={loading}
               />
@@ -95,7 +95,7 @@ function LoginPage() {
                 required
                 value={email}
                 onChange={e => setEmail(e.target.value)}
-                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
+                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 text-gray-900 text-base"
                 placeholder="name@firma.de"
                 disabled={loading}
               />
@@ -113,7 +113,7 @@ function LoginPage() {
                 required
                 value={password}
                 onChange={e => setPassword(e.target.value)}
-                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
+                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 text-gray-900 text-base"
                 placeholder="••••••••"
                 disabled={loading}
               />
