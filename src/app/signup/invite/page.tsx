@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 type InviteInfo = {
@@ -7,7 +7,7 @@ type InviteInfo = {
   company: { name: string };
 };
 
-export default function InviteSignupPage() {
+function InviteSignup() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
@@ -129,4 +129,18 @@ export default function InviteSignupPage() {
       </div>
     </div>
   );
+}
+
+export default function InviteSignupPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-200 px-4">
+        <div className="w-full max-w-md bg-white/80 backdrop-blur-md rounded-2xl shadow-xl p-8">
+          <div className="animate-pulse text-center py-12 text-gray-400">Lade Einladung...</div>
+        </div>
+      </div>
+    }>
+      <InviteSignup />
+    </Suspense>
+  )
 } 
