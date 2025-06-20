@@ -5,6 +5,7 @@ import AdminInviteSection from "./AdminInviteSection";
 import AccountMenu from "./AccountMenu";
 import type { AuthOptions } from "next-auth";
 import Image from "next/image";
+import Link from "next/link";
 
 // Typ für User
 interface DashboardUser {
@@ -89,24 +90,28 @@ export default async function DashboardPage() {
                   </tr>
                 ) : (
                   users.map((user) => (
-                    <tr key={user.id} className="hover:bg-gray-50 transition-colors">
+                    <tr key={user.id} className="hover:bg-gray-50 transition-colors cursor-pointer">
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center">
+                        <Link href={`/dashboard/profil/${user.id}`} className="flex items-center">
                           <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-medium">
                             {user.name.charAt(0).toUpperCase()}
                           </div>
                           <div className="ml-3">
                             <div className="text-sm font-medium text-gray-900">{user.name}</div>
                           </div>
-                        </div>
+                        </Link>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-600">{user.email}</div>
+                        <Link href={`/dashboard/profil/${user.id}`} className="text-sm text-gray-600 block w-full h-full">
+                          {user.email}
+                        </Link>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                          {user.role === 'ADMIN' ? 'Administrator' : 'Mitarbeiter'}
-                        </span>
+                        <Link href={`/dashboard/profil/${user.id}`} className="block w-full h-full">
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                            {user.role === 'ADMIN' ? 'Administrator' : 'Mitarbeiter'}
+                          </span>
+                        </Link>
                       </td>
                     </tr>
                   ))
