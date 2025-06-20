@@ -1,6 +1,6 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "../api/auth/[...nextauth]/authOptions";
-import { PrismaClient } from "@prisma/client";
+import prisma from "@/lib/prisma";
 import AdminInviteSection from "./AdminInviteSection";
 import AccountMenu from "./AccountMenu";
 import type { AuthOptions } from "next-auth";
@@ -18,7 +18,6 @@ interface DashboardUser {
 
 export default async function DashboardPage() {
   const session = await getServerSession(authOptions as AuthOptions);
-  const prisma = new PrismaClient();
   let users: DashboardUser[] = [];
   const user = session?.user as DashboardUser | null;
   if (user?.companyId) {

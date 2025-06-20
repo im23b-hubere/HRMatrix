@@ -1,13 +1,11 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/authOptions";
-import { PrismaClient } from "@prisma/client";
+import prisma from "@/lib/prisma";
 import { notFound, redirect } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import AccountMenu from "../../AccountMenu";
 import type { FC } from "react";
-
-const prisma = new PrismaClient();
 
 type UserProfilePageProps = {
   params: { userId: string };
