@@ -10,6 +10,7 @@ const prisma = new PrismaClient();
 
 type Props = {
   params: { userId: string };
+  searchParams: { [key: string]: string | string[] | undefined };
 };
 
 // Hilfsfunktion zum Abrufen von Benutzerdaten
