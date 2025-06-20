@@ -5,12 +5,12 @@ import { notFound, redirect } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import AccountMenu from "../../AccountMenu";
+import type { FC } from "react";
 
 const prisma = new PrismaClient();
 
-type Props = {
+type UserProfilePageProps = {
   params: { userId: string };
-  searchParams: { [key: string]: string | string[] | undefined };
 };
 
 // Hilfsfunktion zum Abrufen von Benutzerdaten
@@ -32,7 +32,7 @@ async function getUserData(userId: number, companyId: number) {
   return userProfile;
 }
 
-export default async function UserProfilePage({ params }: Props) {
+const UserProfilePage: FC<UserProfilePageProps> = async ({ params }) => {
   const session = await getServerSession(authOptions);
   
   // Session- und Benutzer-ID-Validierung
@@ -132,4 +132,6 @@ export default async function UserProfilePage({ params }: Props) {
       </div>
     </main>
   );
-} 
+}
+
+export default UserProfilePage; 
