@@ -29,6 +29,7 @@ export async function POST(req: Request) {
         companyId,
         role: role === "ADMIN" ? "ADMIN" : "USER",
         expiresAt,
+        status: "PENDING",
       },
     });
     // E-Mail versenden
