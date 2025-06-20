@@ -8,6 +8,10 @@ import AccountMenu from "../../AccountMenu";
 
 const prisma = new PrismaClient();
 
+type Props = {
+  params: { userId: string };
+};
+
 // Hilfsfunktion zum Abrufen von Benutzerdaten
 async function getUserData(userId: number, companyId: number) {
   const userProfile = await prisma.user.findFirst({
@@ -27,7 +31,7 @@ async function getUserData(userId: number, companyId: number) {
   return userProfile;
 }
 
-export default async function UserProfilePage({ params }: { params: { userId: string } }) {
+export default async function UserProfilePage({ params }: Props) {
   const session = await getServerSession(authOptions);
   
   // Session- und Benutzer-ID-Validierung
