@@ -8,6 +8,7 @@ import AccountMenu from "../../AccountMenu";
 
 type UserProfilePageProps = {
   params: { userId: string };
+  searchParams: { [key: string]: string | string[] | undefined };
 };
 
 // Hilfsfunktion zum Abrufen von Benutzerdaten
