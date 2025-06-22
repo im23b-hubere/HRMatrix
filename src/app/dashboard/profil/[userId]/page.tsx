@@ -5,7 +5,6 @@ import { notFound, redirect } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import AccountMenu from "../../AccountMenu";
-import type { FC } from "react";
 
 type UserProfilePageProps = {
   params: { userId: string };
@@ -30,7 +29,7 @@ async function getUserData(userId: number, companyId: number) {
   return userProfile;
 }
 
-const UserProfilePage: FC<UserProfilePageProps> = async ({ params }) => {
+const UserProfilePage = async ({ params }: UserProfilePageProps) => {
   const session = await getServerSession(authOptions);
   
   // Session- und Benutzer-ID-Validierung
