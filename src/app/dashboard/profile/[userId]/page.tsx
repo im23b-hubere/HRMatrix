@@ -25,6 +25,7 @@ async function getUserData(userId: number, companyId: number) {
   return userProfile;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default async function Page(props: any) {
   const { params } = props;
   const session = await getServerSession(authOptions);
