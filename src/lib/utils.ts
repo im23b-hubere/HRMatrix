@@ -1,4 +1,8 @@
 export function getBaseUrl() {
+  if (process.env.NODE_ENV === "production") {
+    // Immer die Haupt-URL für Produktion zurückgeben
+    return "https://hr-matrix-new.vercel.app";
+  }
   if (process.env.NEXT_PUBLIC_APP_URL) {
     return process.env.NEXT_PUBLIC_APP_URL;
   }
