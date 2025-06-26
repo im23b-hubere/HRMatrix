@@ -6,11 +6,6 @@ import Image from "next/image";
 import Link from "next/link";
 import AccountMenu from "../../AccountMenu";
 
-type UserProfilePageProps = {
-  params: { userId: string };
-  searchParams: { [key: string]: string | string[] | undefined };
-};
-
 // Hilfsfunktion zum Abrufen von Benutzerdaten
 async function getUserData(userId: number, companyId: number) {
   const userProfile = await prisma.user.findFirst({
@@ -30,7 +25,7 @@ async function getUserData(userId: number, companyId: number) {
   return userProfile;
 }
 
-const UserProfilePage = async ({ params }: UserProfilePageProps) => {
+export default async function Page({ params }: { params: { userId: string } }) {
   const session = await getServerSession(authOptions);
   
   // Session- und Benutzer-ID-Validierung
@@ -130,6 +125,4 @@ const UserProfilePage = async ({ params }: UserProfilePageProps) => {
       </div>
     </main>
   );
-}
-
-export default UserProfilePage; 
+} 
