@@ -25,7 +25,8 @@ async function getUserData(userId: number, companyId: number) {
   return userProfile;
 }
 
-export default async function Page({ params }: { params: { userId: string } }) {
+export default async function Page(props: any) {
+  const { params } = props;
   const session = await getServerSession(authOptions);
   
   // Session- und Benutzer-ID-Validierung
