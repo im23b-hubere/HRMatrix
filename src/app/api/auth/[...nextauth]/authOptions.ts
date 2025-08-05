@@ -1,11 +1,9 @@
 import CredentialsProvider from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
-import { PrismaClient } from "@prisma/client";
+import prisma from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 import type { AuthOptions, User as NextAuthUser } from "next-auth";
 import type { JWT } from "next-auth/jwt";
-
-const prisma = new PrismaClient();
 
 // Zusätzliche Typen für die erweiterten User- und Token-Objekte
 type ExtendedUser = NextAuthUser & {
@@ -59,6 +57,10 @@ export const authOptions: AuthOptions = {
   ],
   session: {
     strategy: "jwt",
+    maxAge: 30 * 24 * 60 * 60, // 30 Tage
+  },
+  jwt: {
+    maxAge: 30 * 24 * 60 * 60, // 30 Tage
   },
   callbacks: {
     async jwt({ token, user }) {
@@ -84,5 +86,6 @@ export const authOptions: AuthOptions = {
     signIn: "/login",
     error: "/login?error=1",
   },
-  secret: process.env.NEXTAUTH_SECRET,
+  secret: process.env.NEXTAUTH_SECRET || "fallback-secret-for-development",
+  debug: process.env.NODE_ENV === "development",
 }; 

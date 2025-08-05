@@ -32,10 +32,10 @@ export default function Home() {
             Anmelden
           </a>
           <a 
-            href="/signup" 
+            href="/signup/company" 
             className="w-full sm:w-auto px-8 py-3 rounded-xl bg-white text-blue-600 font-semibold text-center border border-blue-200 shadow-sm hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-200 transition-all duration-200"
           >
-            Account erstellen
+            Firma registrieren
           </a>
         </div>
       </section>

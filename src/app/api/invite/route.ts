@@ -4,7 +4,7 @@ import { Resend } from "resend";
 import { randomBytes } from "crypto";
 import { getBaseUrl } from "@/lib/utils";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
 export async function POST(req: Request) {
   try {
@@ -31,31 +31,41 @@ export async function POST(req: Request) {
         status: "PENDING",
       },
     });
-    // E-Mail versenden
+    // E-Mail versenden (falls Resend konfiguriert ist)
     const baseUrl = getBaseUrl();
     const inviteUrl = `${baseUrl}/signup/invite?token=${token}`;
-    await resend.emails.send({
-      from: "onboarding@resend.dev",
-      to: email,
-      subject: `Einladung zu HRMatrix von ${inviterName}`,
-      html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-          <h2 style="color: #1a1a1a; font-size: 24px; margin-bottom: 20px;">Du wurdest zu HRMatrix eingeladen!</h2>
-          <p style="color: #4a5568; font-size: 16px; line-height: 1.5;">${inviterName} (${inviterEmail}) hat dich eingeladen, dem Unternehmen beizutreten.</p>
-          <div style="margin: 30px 0;">
-            <a href="${inviteUrl}" 
-               style="background: #2563eb; color: #ffffff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-block;">
-              Jetzt Account anlegen
-            </a>
-          </div>
-          <p style="color: #718096; font-size: 14px;">Der Link ist 24 Stunden gültig.</p>
-          <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 20px 0;" />
-          <p style="color: #718096; font-size: 12px;">
-            Falls du diese Einladung nicht erwartet hast, kannst du sie ignorieren.
-          </p>
-        </div>
-      `
-    });
+    
+    if (resend) {
+      try {
+        await resend.emails.send({
+          from: "onboarding@resend.dev",
+          to: email,
+          subject: `Einladung zu HRMatrix von ${inviterName}`,
+          html: `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+              <h2 style="color: #1a1a1a; font-size: 24px; margin-bottom: 20px;">Du wurdest zu HRMatrix eingeladen!</h2>
+              <p style="color: #4a5568; font-size: 16px; line-height: 1.5;">${inviterName} (${inviterEmail}) hat dich eingeladen, dem Unternehmen beizutreten.</p>
+              <div style="margin: 30px 0;">
+                <a href="${inviteUrl}" 
+                   style="background: #2563eb; color: #ffffff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-block;">
+                  Jetzt Account anlegen
+                </a>
+              </div>
+              <p style="color: #718096; font-size: 14px;">Der Link ist 24 Stunden gültig.</p>
+              <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 20px 0;" />
+              <p style="color: #718096; font-size: 12px;">
+                Falls du diese Einladung nicht erwartet hast, kannst du sie ignorieren.
+              </p>
+            </div>
+          `
+        });
+      } catch (emailError) {
+        console.error("E-Mail-Versand fehlgeschlagen:", emailError);
+        // Einladung trotz E-Mail-Fehler erfolgreich erstellen
+      }
+    } else {
+      console.log(`Einladung erstellt für ${email}. Link: ${inviteUrl}`);
+    }
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Einladungsfehler:", error);

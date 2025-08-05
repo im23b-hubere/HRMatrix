@@ -17,6 +17,7 @@ function LoginPage() {
 
   // Fehler von NextAuth (z.B. falsche Credentials)
   const nextAuthError = searchParams.get("error");
+  const successMessage = searchParams.get("message");
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -119,6 +120,14 @@ function LoginPage() {
               />
             </div>
           </div>
+
+          {successMessage === "registration-success" && (
+            <div className="p-3 rounded-lg bg-green-50 border border-green-100">
+              <p className="text-green-600 text-sm text-center font-medium">
+                Registrierung erfolgreich! Du kannst dich jetzt anmelden.
+              </p>
+            </div>
+          )}
 
           {(error || nextAuthError) && (
             <div className="p-3 rounded-lg bg-red-50 border border-red-100">

@@ -17,15 +17,38 @@ interface DashboardUser {
 }
 
 export default async function DashboardPage() {
-  const session = await getServerSession(authOptions as AuthOptions);
+  let session;
   let users: DashboardUser[] = [];
-  const user = session?.user as DashboardUser | null;
-  if (user?.companyId) {
-    users = await prisma.user.findMany({
-      where: { companyId: user.companyId },
-      select: { id: true, name: true, email: true, role: true, companyId: true },
-      orderBy: { name: "asc" },
-    });
+  let user: DashboardUser | null = null;
+  
+  try {
+    session = await getServerSession(authOptions as AuthOptions);
+    user = session?.user as DashboardUser | null;
+    
+    if (user?.companyId) {
+      users = await prisma.user.findMany({
+        where: { companyId: user.companyId },
+        select: { id: true, name: true, email: true, role: true, companyId: true },
+        orderBy: { name: "asc" },
+      });
+    }
+  } catch (error) {
+    console.error("Session error:", error);
+    // Bei Session-Fehlern zur Login-Seite weiterleiten
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-white">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">Session-Fehler</h1>
+          <p className="text-gray-600 mb-4">Bitte melden Sie sich erneut an.</p>
+          <a 
+            href="/login" 
+            className="px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors"
+          >
+            Zurück zum Login
+          </a>
+        </div>
+      </div>
+    );
   }
 
   const companyId = user?.companyId ? Number(user.companyId) : undefined;
@@ -33,7 +56,20 @@ export default async function DashboardPage() {
   const inviterEmail = user?.email ? String(user.email) : undefined;
 
   if (!user) {
-    return null; // oder Redirect zur Login-Seite
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-white">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">Nicht angemeldet</h1>
+          <p className="text-gray-600 mb-4">Bitte melden Sie sich an, um das Dashboard zu sehen.</p>
+          <a 
+            href="/login" 
+            className="px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors"
+          >
+            Zum Login
+          </a>
+        </div>
+      </div>
+    );
   }
 
   return (
