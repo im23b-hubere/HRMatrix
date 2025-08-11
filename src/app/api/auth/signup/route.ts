@@ -11,6 +11,15 @@ export async function POST(req: Request) {
     
     console.log("Starting registration for:", { company, name, email });
     
+    // Test database connection first
+    try {
+      await prisma.$connect();
+      console.log("Database connection successful");
+    } catch (dbError) {
+      console.error("Database connection failed:", dbError);
+      return NextResponse.json({ error: "Datenbankverbindung fehlgeschlagen." }, { status: 500 });
+    }
+    
     // Firma suchen oder anlegen
     let dbCompany = await prisma.company.findUnique({ where: { name: company } });
     if (!dbCompany) {
@@ -52,6 +61,25 @@ export async function POST(req: Request) {
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Registration error:", error);
+    
+    // Spezifischere Fehlermeldungen
+    if (error instanceof Error) {
+      if (error.message.includes("DATABASE_URL")) {
+        return NextResponse.json({ error: "Datenbankverbindung nicht konfiguriert." }, { status: 500 });
+      }
+      if (error.message.includes("Unique constraint")) {
+        return NextResponse.json({ error: "E-Mail oder Firmenname bereits vorhanden." }, { status: 400 });
+      }
+      if (error.message.includes("Connection")) {
+        return NextResponse.json({ error: "Datenbank nicht erreichbar." }, { status: 500 });
+      }
+      if (error.message.includes("relation") && error.message.includes("does not exist")) {
+        return NextResponse.json({ error: "Datenbanktabellen nicht erstellt. Bitte Migration ausführen." }, { status: 500 });
+      }
+    }
+    
     return NextResponse.json({ error: "Etwas ist schiefgelaufen." }, { status: 500 });
+  } finally {
+    await prisma.$disconnect();
   }
 } 
