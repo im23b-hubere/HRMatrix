@@ -3,8 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../auth/[...nextauth]/authOptions";
 import prisma from "@/lib/prisma";
-import { writeFile, mkdir } from "fs/promises";
-import path from "path";
+import { supabase } from "@/lib/supabase";
 
 export async function POST(request: NextRequest) {
   try {
@@ -43,29 +42,35 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Datei ist zu groß (max. 10MB)" }, { status: 400 });
     }
 
-    // Upload-Verzeichnis erstellen
-    const uploadDir = path.join(process.cwd(), "public", "uploads", "cvs");
-    await mkdir(uploadDir, { recursive: true });
-
     // Eindeutigen Dateinamen generieren
     const timestamp = Date.now();
-    const fileExtension = path.extname(file.name);
     const fileName = `${timestamp}_${file.name}`;
-    const filePath = path.join(uploadDir, fileName);
+    const filePath = `${user.companyId}/${fileName}`;
 
-    // Datei speichern
+    // Datei zu Supabase Storage hochladen
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
-    await writeFile(filePath, buffer);
+    
+    const { data, error } = await supabase.storage
+      .from('cv-uploads')
+      .upload(filePath, buffer, {
+        contentType: file.type,
+        cacheControl: '3600'
+      });
+
+    if (error) {
+      console.error("Supabase Upload Error:", error);
+      return NextResponse.json({ error: "Upload zu Supabase fehlgeschlagen" }, { status: 500 });
+    }
 
     // CV in Datenbank speichern
-    const cv = await (prisma as any).cV.create({
+    const cv = await prisma.cv.create({
       data: {
         fileName: fileName,
         originalName: file.name,
         fileSize: file.size,
         fileType: file.type,
-        filePath: `/uploads/cvs/${user.companyId}/${fileName}`,
+        filePath: filePath, // Supabase Storage Path
         companyId: user.companyId,
         uploadedById: user.id,
         jobPostingId: null, // No job posting ID for now, as it's not in the form data
