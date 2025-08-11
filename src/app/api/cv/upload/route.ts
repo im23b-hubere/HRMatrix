@@ -47,6 +47,10 @@ export async function POST(request: NextRequest) {
     const fileName = `${timestamp}_${file.name}`;
     const filePath = `${user.companyId}/${fileName}`;
 
+    // Debug: Environment Variables prüfen
+    console.log("SUPABASE_URL exists:", !!process.env.NEXT_PUBLIC_SUPABASE_URL);
+    console.log("SUPABASE_ANON_KEY exists:", !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
+    
     // Datei zu Supabase Storage hochladen
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
@@ -60,7 +64,10 @@ export async function POST(request: NextRequest) {
 
     if (error) {
       console.error("Supabase Upload Error:", error);
-      return NextResponse.json({ error: "Upload zu Supabase fehlgeschlagen" }, { status: 500 });
+      return NextResponse.json({ 
+        error: "Upload zu Supabase fehlgeschlagen", 
+        details: error.message 
+      }, { status: 500 });
     }
 
     // CV in Datenbank speichern
