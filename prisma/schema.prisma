@@ -20,6 +20,10 @@ model Company {
   name        String       @unique
   users       User[]
   invitations Invitation[]
+  cvs         CV[]
+  jobPostings JobPosting[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
 }
 
 model User {
@@ -32,6 +36,9 @@ model User {
   role       Role     @default(USER)
   accounts   Account[]
   sessions   Session[]
+  cvs        CV[]
+  cvReviews  CVReview[]
+  jobPostings JobPosting[]
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 }
@@ -91,4 +98,74 @@ enum InvitationStatus {
   PENDING
   ACCEPTED
   EXPIRED
+}
+
+model CV {
+  id          Int       @id @default(autoincrement())
+  fileName    String
+  originalName String
+  fileSize    Int
+  fileType    String
+  filePath    String
+  status      CVStatus  @default(NEW)
+  company     Company   @relation(fields: [companyId], references: [id])
+  companyId   Int
+  uploadedBy  User      @relation(fields: [uploadedById], references: [id])
+  uploadedById Int
+  jobPosting  JobPosting? @relation(fields: [jobPostingId], references: [id])
+  jobPostingId Int?
+  reviews     CVReview[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model JobPosting {
+  id          Int       @id @default(autoincrement())
+  title       String
+  description String
+  requirements String
+  status      JobStatus @default(ACTIVE)
+  company     Company   @relation(fields: [companyId], references: [id])
+  companyId   Int
+  createdBy   User      @relation(fields: [createdById], references: [id])
+  createdById Int
+  cvs         CV[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model CVReview {
+  id          Int       @id @default(autoincrement())
+  cv          CV        @relation(fields: [cvId], references: [id])
+  cvId        Int
+  reviewer    User      @relation(fields: [reviewerId], references: [id])
+  reviewerId  Int
+  rating      Int       // 1-5 stars
+  skills      Int       // 1-5 rating
+  experience  Int       // 1-5 rating
+  fit         Int       // 1-5 rating
+  comments    String?
+  status      ReviewStatus @default(PENDING)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+enum CVStatus {
+  NEW
+  IN_REVIEW
+  SHORTLISTED
+  INTERVIEWED
+  ACCEPTED
+  REJECTED
+}
+
+enum JobStatus {
+  ACTIVE
+  CLOSED
+  DRAFT
+}
+
+enum ReviewStatus {
+  PENDING
+  COMPLETED
 }
