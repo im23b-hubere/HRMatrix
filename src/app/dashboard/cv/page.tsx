@@ -7,6 +7,7 @@ import CVUploadForm from "../CVUploadForm";
 import { FileText, Search, Filter, Download, Eye, Star, Calendar } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 interface CV {
   id: number;
@@ -49,6 +50,8 @@ export default function CVDashboardPage() {
     { value: "ACCEPTED", label: "Angenommen" },
     { value: "REJECTED", label: "Abgelehnt" }
   ];
+
+  const router = useRouter();
 
   const fetchCVs = async () => {
     setLoading(true);
@@ -231,7 +234,8 @@ export default function CVDashboardPage() {
               {cvs.map((cv) => (
                 <div
                   key={cv.id}
-                  className="bg-white border border-gray-200 rounded-xl p-6 hover:shadow-md transition-shadow"
+                  className="bg-white border border-gray-200 rounded-xl p-6 hover:shadow-md transition-shadow cursor-pointer"
+                  onClick={() => router.push(`/dashboard/cv/${cv.id}`)}
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-4">
@@ -276,7 +280,7 @@ export default function CVDashboardPage() {
                       </span>
                       
                       {/* Actions */}
-                      <div className="flex items-center space-x-2">
+                      <div className="flex items-center space-x-2" onClick={(e) => e.stopPropagation()}>
                         <a
                           href={cv.filePath}
                           target="_blank"
