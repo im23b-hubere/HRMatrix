@@ -29,12 +29,20 @@ export async function GET(request: NextRequest) {
     const search = searchParams.get("search");
 
     // Filter erstellen
-    const where: any = {
+    const where: {
+      companyId: number;
+      status?: "NEW" | "IN_REVIEW" | "SHORTLISTED" | "INTERVIEWED" | "ACCEPTED" | "REJECTED";
+      jobPostingId?: number;
+      OR?: Array<{
+        originalName?: { contains: string; mode: string };
+        uploadedBy?: { name: { contains: string; mode: string } };
+      }>;
+    } = {
       companyId: user.companyId
     };
 
     if (status && status !== "ALL") {
-      where.status = status;
+      where.status = status as "NEW" | "IN_REVIEW" | "SHORTLISTED" | "INTERVIEWED" | "ACCEPTED" | "REJECTED";
     }
 
     if (jobPostingId) {

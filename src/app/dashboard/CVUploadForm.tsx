@@ -100,7 +100,7 @@ export default function CVUploadForm({ onUploadSuccess, jobPostingId }: CVUpload
         setErrorMessage(data.error || "Upload fehlgeschlagen");
         setUploadStatus("error");
       }
-    } catch (error) {
+    } catch {
       setErrorMessage("Netzwerkfehler beim Upload");
       setUploadStatus("error");
     } finally {

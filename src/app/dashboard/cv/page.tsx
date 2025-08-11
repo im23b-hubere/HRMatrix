@@ -1,8 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { getServerSession } from "next-auth";
-import { authOptions } from "../../api/auth/[...nextauth]/authOptions";
+import { useState, useEffect, useCallback } from "react";
 import CVUploadForm from "../CVUploadForm";
 import { FileText, Search, Filter, Download, Eye, Star, Calendar } from "lucide-react";
 import Image from "next/image";
@@ -41,6 +39,8 @@ export default function CVDashboardPage() {
   const [showUpload, setShowUpload] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
 
+  const router = useRouter();
+
   const statusOptions = [
     { value: "ALL", label: "Alle Status" },
     { value: "NEW", label: "Neu" },
@@ -51,9 +51,7 @@ export default function CVDashboardPage() {
     { value: "REJECTED", label: "Abgelehnt" }
   ];
 
-  const router = useRouter();
-
-  const fetchCVs = async () => {
+  const fetchCVs = useCallback(async () => {
     setLoading(true);
     try {
       const params = new URLSearchParams({
@@ -75,11 +73,11 @@ export default function CVDashboardPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [currentPage, searchTerm, statusFilter]);
 
   useEffect(() => {
     fetchCVs();
-  }, [currentPage, searchTerm, statusFilter]);
+  }, [fetchCVs]);
 
   const handleUploadSuccess = () => {
     fetchCVs();

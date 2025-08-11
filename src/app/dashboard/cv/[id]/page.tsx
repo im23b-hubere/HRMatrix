@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useState, useEffect, useCallback } from "react";
+import { useParams } from "next/navigation";
 import { FileText, Star, Calendar, User, Download, Eye, ArrowLeft, MessageSquare, CheckCircle } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -46,7 +46,6 @@ interface Review {
 
 export default function CVDetailPage() {
   const params = useParams();
-  const router = useRouter();
   const [cv, setCv] = useState<CV | null>(null);
   const [loading, setLoading] = useState(true);
   const [showReviewForm, setShowReviewForm] = useState(false);
@@ -69,11 +68,7 @@ export default function CVDetailPage() {
     { value: "REJECTED", label: "Abgelehnt", color: "bg-red-100 text-red-800" }
   ];
 
-  useEffect(() => {
-    fetchCVDetails();
-  }, [params.id]);
-
-  const fetchCVDetails = async () => {
+  const fetchCVDetails = useCallback(async () => {
     try {
       const response = await fetch(`/api/cv/${params.id}`);
       const data = await response.json();
@@ -88,7 +83,11 @@ export default function CVDetailPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [params.id]);
+
+  useEffect(() => {
+    fetchCVDetails();
+  }, [fetchCVDetails]);
 
   const handleReviewSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
