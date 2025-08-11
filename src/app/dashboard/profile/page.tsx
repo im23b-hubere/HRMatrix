@@ -1,7 +1,6 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../api/auth/[...nextauth]/authOptions";
-import { PrismaClient } from "@prisma/client";
-import type { AuthOptions } from "next-auth";
+import prisma from "@/lib/prisma";
 import ProfileForm from "./ProfileForm";
 import Link from "next/link";
 
@@ -17,8 +16,7 @@ interface ProfileUser {
 }
 
 export default async function ProfilePage() {
-  const session = await getServerSession(authOptions as AuthOptions);
-  const prisma = new PrismaClient();
+  const session = await getServerSession(authOptions);
   
   if (!session?.user?.email) {
     return null;
