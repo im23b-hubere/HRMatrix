@@ -44,7 +44,7 @@ export async function GET(request: NextRequest) {
 
     // CVs abrufen
     const [cvs, total] = await Promise.all([
-      (prisma as any).cV.findMany({
+      prisma.cv.findMany({
         where,
         include: {
           uploadedBy: {
@@ -61,7 +61,7 @@ export async function GET(request: NextRequest) {
         skip: (page - 1) * limit,
         take: limit
       }),
-      (prisma as any).cV.count({ where })
+      prisma.cv.count({ where })
     ]);
 
     // Durchschnittsbewertung berechnen
