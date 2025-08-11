@@ -15,8 +15,8 @@ model Company {
   name        String       @unique
   users       User[]
   invitations Invitation[]
-  cvs         CV[]
-  jobPostings JobPosting[]
+  cvs         cv[]
+  jobPostings jobPosting[]
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
 }
@@ -31,9 +31,9 @@ model User {
   role       Role     @default(USER)
   accounts   Account[]
   sessions   Session[]
-  cvs        CV[]
-  cvReviews  CVReview[]
-  jobPostings JobPosting[]
+  cvs        cv[]
+  cvReviews  cvReview[]
+  jobPostings jobPosting[]
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 }
@@ -95,7 +95,7 @@ enum InvitationStatus {
   EXPIRED
 }
 
-model CV {
+model cv {
   id          Int       @id @default(autoincrement())
   fileName    String
   originalName String
@@ -107,14 +107,14 @@ model CV {
   companyId   Int
   uploadedBy  User      @relation(fields: [uploadedById], references: [id])
   uploadedById Int
-  jobPosting  JobPosting? @relation(fields: [jobPostingId], references: [id])
+  jobPosting  jobPosting? @relation(fields: [jobPostingId], references: [id])
   jobPostingId Int?
-  reviews     CVReview[]
+  reviews     cvReview[]
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 }
 
-model JobPosting {
+model jobPosting {
   id          Int       @id @default(autoincrement())
   title       String
   description String
@@ -124,14 +124,14 @@ model JobPosting {
   companyId   Int
   createdBy   User      @relation(fields: [createdById], references: [id])
   createdById Int
-  cvs         CV[]
+  cvs         cv[]
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 }
 
-model CVReview {
+model cvReview {
   id          Int       @id @default(autoincrement())
-  cv          CV        @relation(fields: [cvId], references: [id])
+  cv          cv        @relation(fields: [cvId], references: [id])
   cvId        Int
   reviewer    User      @relation(fields: [reviewerId], references: [id])
   reviewerId  Int

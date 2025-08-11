@@ -29,20 +29,12 @@ export async function GET(request: NextRequest) {
     const search = searchParams.get("search");
 
     // Filter erstellen
-    const where: {
-      companyId: number;
-      status?: "NEW" | "IN_REVIEW" | "SHORTLISTED" | "INTERVIEWED" | "ACCEPTED" | "REJECTED";
-      jobPostingId?: number;
-      OR?: Array<{
-        originalName?: { contains: string; mode: string };
-        uploadedBy?: { name: { contains: string; mode: string } };
-      }>;
-    } = {
+    const where: any = {
       companyId: user.companyId
     };
 
     if (status && status !== "ALL") {
-      where.status = status as "NEW" | "IN_REVIEW" | "SHORTLISTED" | "INTERVIEWED" | "ACCEPTED" | "REJECTED";
+      where.status = status;
     }
 
     if (jobPostingId) {
@@ -58,7 +50,7 @@ export async function GET(request: NextRequest) {
 
     // CVs abrufen
     const [cvs, total] = await Promise.all([
-      prisma.cV.findMany({
+      prisma.cv.findMany({
         where,
         include: {
           uploadedBy: {
@@ -75,7 +67,7 @@ export async function GET(request: NextRequest) {
         skip: (page - 1) * limit,
         take: limit
       }),
-      prisma.cV.count({ where })
+      prisma.cv.count({ where })
     ]);
 
     // Durchschnittsbewertung berechnen
