@@ -45,7 +45,7 @@ export async function POST(
     }
 
     // Prüfen, ob bereits eine Bewertung von diesem User existiert
-    const existingReview = await (prisma as any).cVReview.findFirst({
+    const existingReview = await prisma.cvReview.findFirst({
       where: {
         cvId: cvId,
         reviewerId: user.id
@@ -57,7 +57,7 @@ export async function POST(
     }
 
     // Neue Bewertung erstellen
-    const review = await (prisma as any).cVReview.create({
+    const review = await prisma.cvReview.create({
       data: {
         cvId: cvId,
         reviewerId: user.id,

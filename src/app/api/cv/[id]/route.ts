@@ -33,7 +33,7 @@ export async function GET(
     }
 
     // CV mit Details abrufen
-    const cv = await (prisma as any).cV.findFirst({
+    const cv = await prisma.cv.findFirst({
       where: {
         id: cvId,
         companyId: user.companyId

@@ -32,7 +32,7 @@ export async function GET(request: NextRequest) {
     // Filter erstellen
     const where = {
       companyId: user.companyId,
-      ...(status && status !== "ALL" && { status }),
+      ...(status && status !== "ALL" && { status: status as any }),
       ...(jobPostingId && { jobPostingId: parseInt(jobPostingId) }),
       ...(search && {
         OR: [

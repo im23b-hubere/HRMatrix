@@ -40,7 +40,7 @@ export async function PATCH(
     }
 
     // CV Status aktualisieren
-    const updatedCV = await (prisma as any).cV.update({
+    const updatedCV = await prisma.cv.update({
       where: {
         id: cvId,
         companyId: user.companyId
