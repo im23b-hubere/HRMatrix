@@ -81,7 +81,7 @@ export async function sendEmail(to: string, subject: string, html: string) {
 
   try {
     const result = await resend.emails.send({
-      from: 'HRMatrix <noreply@hrmatrix.vercel.app>', // ÄNDERE DIESE DOMAIN auf deine echte Vercel-Domain
+      from: 'HRMatrix <noreply@hr-matrix-new.vercel.app>', // Deine Vercel-Domain
       to: [to],
       subject,
       html,
