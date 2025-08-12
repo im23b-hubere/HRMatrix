@@ -1,27 +1,39 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { Resend } from "resend";
 import { randomBytes } from "crypto";
 import { getBaseUrl } from "@/lib/utils";
-
-const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
+import { sendInvitationEmail } from "@/lib/email";
 
 export async function POST(req: Request) {
   try {
     const { email, role, companyId, inviterName, inviterEmail } = await req.json();
+    
+    // Validierung
     if (!email || !companyId || !inviterName || !inviterEmail) {
       return NextResponse.json({ error: "Alle Felder sind erforderlich." }, { status: 400 });
     }
+
     // Prüfen, ob User schon existiert
-    const existingUser = await prisma.user.findFirst({ where: { email, companyId } });
+    const existingUser = await prisma.user.findFirst({ 
+      where: { email, companyId } 
+    });
+    
     if (existingUser) {
       return NextResponse.json({ error: "User existiert bereits." }, { status: 400 });
     }
+
+    // Company-Name für E-Mail abrufen
+    const company = await prisma.company.findUnique({
+      where: { id: companyId },
+      select: { name: true }
+    });
+
     // Token generieren
     const token = randomBytes(32).toString("hex");
     const expiresAt = new Date(Date.now() + 1000 * 60 * 60 * 24); // 24h gültig
+    
     // Einladung speichern
-    await prisma.invitation.create({
+    const invitation = await prisma.invitation.create({
       data: {
         email,
         token,
@@ -31,44 +43,42 @@ export async function POST(req: Request) {
         status: "PENDING",
       },
     });
-    // E-Mail versenden (falls Resend konfiguriert ist)
+
+    // E-Mail versenden
     const baseUrl = getBaseUrl();
     const inviteUrl = `${baseUrl}/signup/invite?token=${token}`;
     
-    if (resend) {
-      try {
-        await resend.emails.send({
-          from: "onboarding@resend.dev",
-          to: email,
-          subject: `Einladung zu HRMatrix von ${inviterName}`,
-          html: `
-            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-              <h2 style="color: #1a1a1a; font-size: 24px; margin-bottom: 20px;">Du wurdest zu HRMatrix eingeladen!</h2>
-              <p style="color: #4a5568; font-size: 16px; line-height: 1.5;">${inviterName} (${inviterEmail}) hat dich eingeladen, dem Unternehmen beizutreten.</p>
-              <div style="margin: 30px 0;">
-                <a href="${inviteUrl}" 
-                   style="background: #2563eb; color: #ffffff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-block;">
-                  Jetzt Account anlegen
-                </a>
-              </div>
-              <p style="color: #718096; font-size: 14px;">Der Link ist 24 Stunden gültig.</p>
-              <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 20px 0;" />
-              <p style="color: #718096; font-size: 12px;">
-                Falls du diese Einladung nicht erwartet hast, kannst du sie ignorieren.
-              </p>
-            </div>
-          `
-        });
-      } catch (emailError) {
-        console.error("E-Mail-Versand fehlgeschlagen:", emailError);
-        // Einladung trotz E-Mail-Fehler erfolgreich erstellen
-      }
-    } else {
-      console.log(`Einladung erstellt für ${email}. Link: ${inviteUrl}`);
+    const emailResult = await sendInvitationEmail({
+      email,
+      inviterName,
+      inviterEmail,
+      inviteUrl,
+      companyName: company?.name
+    });
+
+    if (!emailResult.success) {
+      console.warn('⚠️ E-Mail konnte nicht versendet werden:', emailResult.error);
+      // Einladung trotz E-Mail-Fehler erfolgreich erstellen
+      return NextResponse.json({ 
+        success: true, 
+        warning: "Einladung erstellt, aber E-Mail konnte nicht versendet werden. Bitte manuell versenden.",
+        inviteUrl 
+      });
     }
-    return NextResponse.json({ success: true });
+
+    console.log('✅ Einladung erfolgreich erstellt und E-Mail versendet:', {
+      email,
+      invitationId: invitation.id,
+      emailResult: emailResult.data
+    });
+
+    return NextResponse.json({ 
+      success: true, 
+      message: "Einladung erfolgreich versendet" 
+    });
+
   } catch (error) {
-    console.error("Einladungsfehler:", error);
+    console.error("❌ Einladungsfehler:", error);
     return NextResponse.json({ error: "Etwas ist schiefgelaufen." }, { status: 500 });
   }
 } 
