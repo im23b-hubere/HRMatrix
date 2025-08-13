@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../auth/[...nextauth]/authOptions";
 import prisma from "@/lib/prisma";
+import { createClient } from '@supabase/supabase-js';
 
 export async function POST(request: NextRequest) {
   try {
@@ -44,27 +45,38 @@ export async function POST(request: NextRequest) {
     // Eindeutigen Dateinamen generieren
     const timestamp = Date.now();
     const fileName = `${timestamp}_${file.name}`;
+    const filePath = `${user.companyId}/${fileName}`;
 
-    // Lokale Dateispeicherung (temporäre Lösung)
-    // TODO: Supabase Storage Bucket konfigurieren für Produktion
+    // Supabase Client initialisieren
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+    
+    if (!supabaseUrl || !supabaseKey) {
+      return NextResponse.json({ error: "Supabase Konfiguration fehlt" }, { status: 500 });
+    }
+
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
+    // Datei zu Supabase Storage hochladen
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
-    
-    // Erstelle Upload-Verzeichnis falls es nicht existiert
-    const fs = require('fs');
-    const path = require('path');
-    const uploadDir = path.join(process.cwd(), 'public', 'uploads', 'cvs', user.companyId.toString());
-    
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir, { recursive: true });
+
+    const { data: uploadData, error: uploadError } = await supabase.storage
+      .from('cvs')
+      .upload(filePath, buffer, {
+        contentType: file.type,
+        upsert: false
+      });
+
+    if (uploadError) {
+      console.error("Supabase Upload Fehler:", uploadError);
+      return NextResponse.json({ error: "Datei-Upload fehlgeschlagen" }, { status: 500 });
     }
-    
-    // Speichere Datei lokal
-    const localFilePath = path.join(uploadDir, fileName);
-    fs.writeFileSync(localFilePath, buffer);
-    
-    // Verwende lokalen Pfad für Dateispeicherung
-    const filePath = `/uploads/cvs/${user.companyId}/${fileName}`;
+
+    // Öffentliche URL generieren
+    const { data: { publicUrl } } = supabase.storage
+      .from('cvs')
+      .getPublicUrl(filePath);
 
     // CV in Datenbank speichern
     const cv = await prisma.cv.create({
@@ -73,10 +85,10 @@ export async function POST(request: NextRequest) {
         originalName: file.name,
         fileSize: file.size,
         fileType: file.type,
-        filePath: filePath, // Lokaler Dateipfad
+        filePath: publicUrl, // Supabase URL
         companyId: user.companyId,
         uploadedById: user.id,
-        jobPostingId: null, // No job posting ID for now, as it's not in the form data
+        jobPostingId: null,
         status: "NEW"
       },
       include: {

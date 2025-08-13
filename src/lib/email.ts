@@ -81,7 +81,7 @@ export async function sendEmail(to: string, subject: string, html: string) {
 
   try {
     const result = await resend.emails.send({
-      from: 'onboarding@resend.dev', // Temporäre Lösung - funktioniert sofort
+      from: 'HRMatrix <noreply@hr-matrix.online>', // Deine neue Domain
       to: [to],
       subject,
       html,
