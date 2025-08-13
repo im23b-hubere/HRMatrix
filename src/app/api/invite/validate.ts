@@ -41,4 +41,4 @@ export async function GET(req: Request) {
   
   console.log("✅ Invitation is valid");
   return NextResponse.json({ invite: { email: invite.email, company: { name: invite.company.name } } });
-} 
+}
